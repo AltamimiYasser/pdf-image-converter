@@ -4,9 +4,17 @@ let pdfjsLib: typeof import('pdfjs-dist') | null = null
 async function getPdfjsLib() {
   if (!pdfjsLib) {
     pdfjsLib = await import('pdfjs-dist')
-    // Configure PDF.js worker
+    // Configure PDF.js worker - use basePath for GitHub Pages
     if (typeof window !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+      // Detect basePath from current location (for GitHub Pages: /repo-name)
+      // Get the base path by checking if we're in a subdirectory
+      const pathParts = window.location.pathname.split('/').filter(Boolean)
+      // If pathname starts with something after the domain, it's likely a basePath
+      // For GitHub Pages: /pdf-image-converter/...
+      const basePath = pathParts.length > 0 && pathParts[0] !== '' 
+        ? `/${pathParts[0]}` 
+        : ''
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `${basePath}/pdf.worker.min.js`
     }
   }
   return pdfjsLib
