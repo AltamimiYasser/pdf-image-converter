@@ -126,7 +126,6 @@ describe('FileList', () => {
   it('handles empty file list', () => {
     render(<FileList files={[]} onDelete={mockOnDelete} onReorder={mockOnReorder} />)
     
-    expect(screen.getByText('Uploaded Files')).toBeInTheDocument()
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
   })
 })

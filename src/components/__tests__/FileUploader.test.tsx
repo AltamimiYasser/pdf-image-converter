@@ -25,7 +25,7 @@ describe('FileUploader', () => {
   it('renders file upload area', () => {
     render(<FileUploader onFilesAdded={mockOnFilesAdded} />)
     expect(screen.getByText(/Drag and drop files here/i)).toBeInTheDocument()
-    expect(screen.getByText(/Supported formats/i)).toBeInTheDocument()
+    expect(screen.getByText(/or click to select/i)).toBeInTheDocument()
   })
 
   it('validates files before adding them', async () => {

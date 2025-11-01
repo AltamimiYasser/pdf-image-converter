@@ -127,7 +127,7 @@ describe('ProcessingStatus', () => {
 
     const progressBar = container.querySelector('.bg-blue-200.rounded-full')
     expect(progressBar).toBeInTheDocument()
-    const progressFill = container.querySelector('.bg-blue-600')
+    const progressFill = container.querySelector('.bg-secondary')
     expect(progressFill).toBeInTheDocument()
     expect(progressFill).toHaveStyle({ width: '40%' })
   })
