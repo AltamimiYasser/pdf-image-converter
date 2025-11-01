@@ -1,0 +1,305 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1</storyId>
+    <title>Core Conversion Functionality</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-pdf-image-conversion-1.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to upload PDFs and images, manage them, and convert between formats</iWant>
+    <soThat>I can transform document and image files without needing server infrastructure or authentication</soThat>
+    <tasks>
+      <phase>
+        <name>Phase 1: Project Setup</name>
+        <ac>#1, #2</ac>
+        <items>
+          <task>Initialize Next.js 14.2.0 project with TypeScript and Tailwind CSS</task>
+          <task>Install core dependencies: pdfjs-dist@4.0.379, pdf-lib@1.17.1, jszip@3.10.1</task>
+          <task>Configure PDF.js worker at `public/pdf.worker.min.js`</task>
+          <task>Set up project structure: `src/app/`, `src/components/`, `src/lib/`, `src/types/`, `src/hooks/`</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Phase 2: File Upload Component</name>
+        <ac>#1, #2, #3</ac>
+        <items>
+          <task>Create `src/types/index.ts` with File type definitions</task>
+          <task>Create `src/lib/file-utils.ts` with file validation functions</task>
+          <task>Create `src/components/FileUploader.tsx` with drag-and-drop zone</task>
+          <task>Implement file input with `multiple` attribute support</task>
+          <task>Add file type validation (PDF and image MIME types)</task>
+          <task>Add file size validation (50MB limit)</task>
+          <task>Display selected files in list with metadata (name, size, type)</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Phase 3: File Management</name>
+        <ac>#4, #5</ac>
+        <items>
+          <task>Create `src/components/FileList.tsx` component</task>
+          <task>Implement drag-and-drop reordering using HTML5 Drag and Drop API</task>
+          <task>Add visual feedback during drag operation</task>
+          <task>Implement delete functionality with file removal from state</task>
+          <task>Update file array order on drop event</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Phase 4: PDF → Images Conversion</name>
+        <ac>#6</ac>
+        <items>
+          <task>Create `src/lib/pdf-converter.ts` utility module</task>
+          <task>Implement PDF.js integration for loading PDF document</task>
+          <task>Extract each PDF page and render to canvas at 300 DPI</task>
+          <task>Convert canvas to PNG blob using `canvas.toBlob()` API</task>
+          <task>Implement image naming: `{pdf-name}-page-{page-number}.png`</task>
+          <task>Create `src/lib/zip-utils.ts` with ZIP creation functions</task>
+          <task>Implement ZIP structure: single PDF → flat images, multiple PDFs → directory structure</task>
+          <task>Trigger browser download of ZIP file using `URL.createObjectURL()`</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Phase 5: Images → PDF Conversion</name>
+        <ac>#7</ac>
+        <items>
+          <task>Create `src/lib/image-converter.ts` utility module</task>
+          <task>Load each image into memory and calculate dimensions</task>
+          <task>Create PDF document using pdf-lib with page size matching first image or A4</task>
+          <task>Insert images as pages maintaining order from file list</task>
+          <task>Generate single PDF output regardless of number of input images</task>
+          <task>Trigger browser download of PDF file using `URL.createObjectURL()`</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Memory Management</name>
+        <ac>#6, #7</ac>
+        <items>
+          <task>Process files sequentially to avoid memory overflow</task>
+          <task>Use blob URLs for large file handling</task>
+          <task>Clean up blob URLs after conversion completes</task>
+        </items>
+      </phase>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">
+      <description>User can upload PDF files via drag-and-drop or file selection</description>
+      <details>Accepts `.pdf` files (MIME: `application/pdf`). Maximum file size: 50MB per file. Maximum files: 20 files per session.</details>
+    </criterion>
+    <criterion id="AC2">
+      <description>User can upload image files via drag-and-drop or file selection</description>
+      <details>Accepts `.png`, `.jpg`, `.jpeg`, `.webp` files. Maximum file size: 50MB per file. Maximum files: 20 files per session.</details>
+    </criterion>
+    <criterion id="AC3">
+      <description>User can view uploaded files in a list with metadata</description>
+      <details>Displays file name, size, and type. Files are displayed in upload order.</details>
+    </criterion>
+    <criterion id="AC4">
+      <description>User can reorder files via drag-and-drop</description>
+      <details>Drag-and-drop reordering updates file list order. Visual feedback during drag operation. Order affects conversion output sequence.</details>
+    </criterion>
+    <criterion id="AC5">
+      <description>User can delete files from the upload list</description>
+      <details>Delete button removes file from list. File object cleared from memory.</details>
+    </criterion>
+    <criterion id="AC6">
+      <description>User can convert PDF files to images</description>
+      <details>Extracts each PDF page as PNG image at 300 DPI. Single PDF: Creates ZIP with images named `{pdf-name}-page-{n}.png`. Multiple PDFs: Creates ZIP with directory structure `{pdf-name}/` containing images. Triggers browser download of ZIP file.</details>
+    </criterion>
+    <criterion id="AC7">
+      <description>User can convert image files to PDF</description>
+      <details>Combines all images into single PDF document. Maintains image order from file list. Page size matches first image or standard A4. Triggers browser download of PDF file.</details>
+    </criterion>
+    <criterion id="AC8">
+      <description>File type validation rejects invalid files</description>
+      <details>Shows error message for non-PDF/image files. Shows error message for files exceeding 50MB. Shows error message if total files exceed 20.</details>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epic-1-context.md</path>
+        <title>Epic Technical Specification: PDF ↔ Image Conversion Tool</title>
+        <section>Detailed Design</section>
+        <snippet>Key components: FileUploader.tsx, FileList.tsx, pdf-converter.ts, image-converter.ts, zip-utils.ts, file-utils.ts. Data models include UploadedFile interface with file, id, name, size, type, order fields.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>pdf-image-convertor - Technical Specification</title>
+        <section>Technical Approach</section>
+        <snippet>Client-side SPA architecture. All conversion happens in browser using Web APIs - no server required. File handling: Upload → Management → Conversion → Output phases.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>pdf-image-convertor - Technical Specification</title>
+        <section>Implementation Stack</section>
+        <snippet>Next.js 14.2.0 App Router, React 18.3.0, pdfjs-dist 4.0.379, pdf-lib 1.17.1, jszip 3.10.1, Tailwind CSS 3.4.0, TypeScript 5.3.3.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>pdf-image-convertor - Technical Specification</title>
+        <section>Technical Details</section>
+        <snippet>PDF → Images: Render each page to canvas at 300 DPI, convert to PNG blob. Images → PDF: Load images, create PDF with pdf-lib, insert pages maintaining order. ZIP structure: Single PDF → flat images; Multiple PDFs → directory structure.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>pdf-image-convertor - Epic Breakdown</title>
+        <section>Story 1: Core Conversion Functionality</section>
+        <snippet>Build core conversion capabilities including project setup, file upload with drag-and-drop, file management features, and both PDF→Images and Images→PDF conversion logic.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- Greenfield project - no existing code artifacts -->
+    </code>
+    <dependencies>
+      <ecosystem>node</ecosystem>
+      <packages>
+        <package name="next" version="14.2.0">React framework with App Router</package>
+        <package name="react" version="18.3.0">UI library</package>
+        <package name="react-dom" version="18.3.0">React DOM rendering</package>
+        <package name="pdfjs-dist" version="4.0.379">PDF parsing and rendering (client-side)</package>
+        <package name="pdf-lib" version="1.17.1">PDF creation and manipulation (client-side)</package>
+        <package name="jszip" version="3.10.1">ZIP file creation (client-side)</package>
+        <package name="typescript" version="5.3.3">Type safety</package>
+        <package name="tailwindcss" version="3.4.0">Utility-first CSS framework</package>
+        <package name="eslint" version="8.57.0">Code linting</package>
+        <package name="prettier" version="3.2.5">Code formatting</package>
+      </packages>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture</type>
+      <description>Client-side only processing - no API routes allowed</description>
+      <source>docs/epic-1-context.md#System-Architecture-Alignment</source>
+    </constraint>
+    <constraint>
+      <type>Memory</type>
+      <description>Browser memory limitations: 50MB per file, max 20 files per session</description>
+      <source>docs/epic-1-context.md#System-Architecture-Alignment</source>
+    </constraint>
+    <constraint>
+      <type>Build</type>
+      <description>Static export configuration for Next.js (no SSR)</description>
+      <source>docs/epic-1-context.md#System-Architecture-Alignment</source>
+    </constraint>
+    <constraint>
+      <type>Processing</type>
+      <description>Sequential file processing to avoid memory overflow</description>
+      <source>docs/tech-spec.md#Memory-Management</source>
+    </constraint>
+    <constraint>
+      <type>Cleanup</type>
+      <description>Blob URLs must be cleaned up after conversion completes</description>
+      <source>docs/tech-spec.md#Memory-Management</source>
+    </constraint>
+    <constraint>
+      <type>Type Safety</type>
+      <description>TypeScript types required for all file objects and interfaces</description>
+      <source>docs/stories/story-pdf-image-conversion-1.md#Dev-Notes</source>
+    </constraint>
+    <constraint>
+      <type>Accessibility</type>
+      <description>ARIA labels and keyboard navigation required for all interactive elements</description>
+      <source>docs/tech-spec.md#Implementation-Guide</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>FileUploader Component</name>
+      <kind>React Component</kind>
+      <signature>FileUploader.tsx - Accepts HTML5 Drag and Drop events or file input change events</signature>
+      <path>src/components/FileUploader.tsx</path>
+    </interface>
+    <interface>
+      <name>file-utils.validateFile()</name>
+      <kind>Function</kind>
+      <signature>validateFile(file: File): ValidationResult - Validates file type, size, and count</signature>
+      <path>src/lib/file-utils.ts</path>
+    </interface>
+    <interface>
+      <name>pdf-converter.convertPdfToImages()</name>
+      <kind>Function</kind>
+      <signature>convertPdfToImages(pdfFiles: File[]): Promise&lt;Blob&gt; - Converts PDF files to ZIP with PNG images</signature>
+      <path>src/lib/pdf-converter.ts</path>
+    </interface>
+    <interface>
+      <name>image-converter.convertImagesToPdf()</name>
+      <kind>Function</kind>
+      <signature>convertImagesToPdf(imageFiles: File[]): Promise&lt;Blob&gt; - Converts image files to single PDF</signature>
+      <path>src/lib/image-converter.ts</path>
+    </interface>
+    <interface>
+      <name>zip-utils.createZip()</name>
+      <kind>Function</kind>
+      <signature>createZip(files: Array&lt;{name: string, blob: Blob}&gt;, structure: 'flat' | 'directory'): Promise&lt;Blob&gt; - Creates ZIP archive</signature>
+      <path>src/lib/zip-utils.ts</path>
+    </interface>
+    <interface>
+      <name>FileList Component</name>
+      <kind>React Component</kind>
+      <signature>FileList.tsx - Displays files with reorder (drag-and-drop) and delete functionality</signature>
+      <path>src/components/FileList.tsx</path>
+    </interface>
+    <interface>
+      <name>UploadedFile Type</name>
+      <kind>TypeScript Interface</kind>
+      <signature>interface UploadedFile { file: File; id: string; name: string; size: number; type: string; order: number; }</signature>
+      <path>src/types/index.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing framework: Jest 29.7.0 + React Testing Library 14.1.2 for unit/integration tests. Test file utilities (validation, type checking) with 100% coverage target. Test conversion logic with mock files targeting 80% coverage. Component tests targeting 70% coverage for user interactions and state management. Manual testing checklist covers cross-browser compatibility and edge cases.
+    </standards>
+    <locations>
+      <location>src/lib/__tests__/</location>
+      <location>src/components/__tests__/</location>
+      <location>src/app/__tests__/</location>
+    </locations>
+    <ideas>
+      <test ac="AC1">
+        <description>Upload PDF files via drag-and-drop, verify file list updates</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC2">
+        <description>Upload image files via file input, verify accepted formats</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC3">
+        <description>Display uploaded files with name, size, type metadata</description>
+        <type>Unit</type>
+      </test>
+      <test ac="AC4">
+        <description>Drag file to reorder, verify order updates in state</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC5">
+        <description>Click delete button, verify file removed from state</description>
+        <type>Unit</type>
+      </test>
+      <test ac="AC6">
+        <description>Convert PDF to images, verify ZIP structure and PNG quality</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC7">
+        <description>Convert images to PDF, verify page order and dimensions</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC8">
+        <description>Upload invalid file types, verify error message displayed</description>
+        <type>Unit</type>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
+

@@ -1,0 +1,324 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>2</storyId>
+    <title>UI Polish and Testing</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-pdf-image-conversion-2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>a polished interface with clear feedback and error handling</iWant>
+    <soThat>I can confidently use the conversion tool with visibility into processing status and helpful guidance when issues occur</soThat>
+    <tasks>
+      <phase>
+        <name>Phase 6: UI Integration</name>
+        <ac>#1, #2, #3, #4</ac>
+        <items>
+          <task>Create `src/components/ConversionControls.tsx` with type selector</task>
+          <task>Implement conversion type state management (PDF→Images vs Images→PDF)</task>
+          <task>Disable conversion when no compatible files uploaded</task>
+          <task>Create `src/components/ProcessingStatus.tsx` progress indicator component</task>
+          <task>Integrate conversion functions with React state using `useState` hooks</task>
+          <task>Add progress updates during conversion (page numbers, file counts)</task>
+          <task>Disable convert button during processing</task>
+          <task>Create error handling component for inline error display</task>
+          <task>Display user-friendly error messages for conversion failures</task>
+          <task>Show success message after conversion completion</task>
+          <task>Ensure download triggers automatically after success</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Phase 7: Polish & Testing</name>
+        <ac>#5, #6, #7, #8</ac>
+        <items>
+          <task>Add loading states and animations using Tailwind CSS</task>
+          <task>Test edge cases: empty file list, mixed file types, invalid files</task>
+          <task>Add error boundaries for React error handling</task>
+          <task>Implement memory cleanup verification (blob URL cleanup)</task>
+          <task>Test with various file sizes (small to 50MB)</task>
+          <task>Test with multiple files (up to 20 files)</task>
+          <task>Cross-browser testing: Chrome, Firefox, Safari</task>
+          <task>Verify conversion completes within reasonable time (&lt;30 seconds)</task>
+          <task>Add ARIA labels to all interactive elements</task>
+          <task>Test keyboard navigation (Tab, Enter, Escape)</task>
+          <task>Implement responsive design for mobile/tablet/desktop</task>
+          <task>Test drag-and-drop reordering across browsers</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Accessibility Enhancements</name>
+        <ac>#8</ac>
+        <items>
+          <task>Add focus management for keyboard users</task>
+          <task>Ensure color contrast meets WCAG AA standards</task>
+          <task>Add screen reader announcements for conversion status</task>
+          <task>Test with screen reader (NVDA/JAWS/VoiceOver)</task>
+        </items>
+      </phase>
+      <phase>
+        <name>Performance Optimization</name>
+        <ac>#7</ac>
+        <items>
+          <task>Monitor memory usage during large file conversions</task>
+          <task>Implement sequential processing for memory efficiency</task>
+          <task>Add memory cleanup after each conversion</task>
+          <task>Verify no memory leaks after multiple conversions</task>
+        </items>
+      </phase>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">
+      <description>User can select conversion type (PDF → Images or Images → PDF)</description>
+      <details>Conversion type selector clearly visible. Selection disabled when no compatible files uploaded. Visual indication of selected conversion type.</details>
+    </criterion>
+    <criterion id="AC2">
+      <description>User sees processing status during conversion</description>
+      <details>Progress indicator shows conversion in progress. Processing status updates (e.g., "Converting page 2 of 5..."). Convert button disabled during processing.</details>
+    </criterion>
+    <criterion id="AC3">
+      <description>User receives clear error messages for conversion failures</description>
+      <details>Error messages displayed inline in UI. Specific error details (file name, error type). User-friendly language (not technical jargon).</details>
+    </criterion>
+    <criterion id="AC4">
+      <description>User sees success feedback after conversion</description>
+      <details>Success message displayed after completion. Download triggered automatically. File list remains available for additional conversions.</details>
+    </criterion>
+    <criterion id="AC5">
+      <description>Application handles edge cases gracefully</description>
+      <details>Empty file list: Convert button disabled. Mixed file types: Error message explaining incompatibility. Invalid file types: Clear rejection message. Large files: Progress indication and memory management.</details>
+    </criterion>
+    <criterion id="AC6">
+      <description>Application works across major browsers</description>
+      <details>Chrome/Edge 90+ (Chromium-based). Firefox 88+. Safari 14+ (with graceful degradation if needed).</details>
+    </criterion>
+    <criterion id="AC7">
+      <description>Application handles memory cleanup properly</description>
+      <details>Blob URLs cleaned up after download. Large files don't cause memory leaks. Multiple conversions don't accumulate memory.</details>
+    </criterion>
+    <criterion id="AC8">
+      <description>UI is accessible and responsive</description>
+      <details>ARIA labels on interactive elements. Keyboard navigation supported. Responsive design works on mobile/tablet/desktop.</details>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epic-1-context.md</path>
+        <title>Epic Technical Specification: PDF ↔ Image Conversion Tool</title>
+        <section>Non-Functional Requirements</section>
+        <snippet>Performance: Conversion speed within 30 seconds for typical files. UI responsiveness during conversion. Browser compatibility: Chrome/Edge 90+, Firefox 88+, Safari 14+. Observability: Progress feedback, error logging, user feedback.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>pdf-image-convertor - Technical Specification</title>
+        <section>Implementation Guide - Phase 6: UI Integration</section>
+        <snippet>Create ConversionControls.tsx with type selector. Integrate conversion functions with React state. Add ProcessingStatus.tsx progress indicator. Handle conversion errors with user-friendly messages.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>pdf-image-convertor - Technical Specification</title>
+        <section>Implementation Guide - Phase 7: Polish & Testing</section>
+        <snippet>Add loading states and animations. Test with various file sizes and types. Verify memory cleanup. Test cross-browser compatibility. Add error boundaries. Ensure accessibility (ARIA labels, keyboard navigation).</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>pdf-image-convertor - Technical Specification</title>
+        <section>Testing Approach</section>
+        <snippet>Manual testing checklist covers drag-and-drop, conversions, edge cases, browser compatibility. Performance testing with large files. Integration tests for file upload flow and conversion workflows.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>pdf-image-convertor - Epic Breakdown</title>
+        <section>Story 2: UI Polish and Testing</section>
+        <snippet>Complete the user interface integration, add progress indicators, error handling, and comprehensive testing across browsers and file types.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-pdf-image-conversion-1.md</path>
+        <title>Story: Core Conversion Functionality</title>
+        <section>Dev Notes</section>
+        <snippet>Establishes project structure with FileUploader.tsx, FileList.tsx, pdf-converter.ts, image-converter.ts, zip-utils.ts, file-utils.ts components. Client-side only architecture with TypeScript type safety.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- Story 1 components to reuse/extend (when implemented): -->
+      <artifact>
+        <path>src/components/FileUploader.tsx</path>
+        <kind>React Component</kind>
+        <symbol>FileUploader</symbol>
+        <reason>Update to add error message display integration</reason>
+      </artifact>
+      <artifact>
+        <path>src/components/FileList.tsx</path>
+        <kind>React Component</kind>
+        <symbol>FileList</symbol>
+        <reason>Update to add accessibility improvements</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/pdf-converter.ts</path>
+        <kind>Module</kind>
+        <symbol>convertPdfToImages</symbol>
+        <reason>Integrate with ProcessingStatus for progress updates</reason>
+      </artifact>
+      <artifact>
+        <path>src/lib/image-converter.ts</path>
+        <kind>Module</kind>
+        <symbol>convertImagesToPdf</symbol>
+        <reason>Integrate with ProcessingStatus for progress updates</reason>
+      </artifact>
+      <artifact>
+        <path>src/types/index.ts</path>
+        <kind>Type Definitions</kind>
+        <symbol>ConversionState</symbol>
+        <reason>Reuse ConversionState interface for status management</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem>node</ecosystem>
+      <packages>
+        <package name="next" version="14.2.0">React framework with App Router</package>
+        <package name="react" version="18.3.0">UI library</package>
+        <package name="react-dom" version="18.3.0">React DOM rendering</package>
+        <package name="typescript" version="5.3.3">Type safety</package>
+        <package name="tailwindcss" version="3.4.0">Utility-first CSS framework for styling and animations</package>
+        <package name="jest" version="29.7.0">Testing framework</package>
+        <package name="@testing-library/react" version="14.1.2">React component testing</package>
+        <package name="eslint" version="8.57.0">Code linting</package>
+        <package name="prettier" version="3.2.5">Code formatting</package>
+      </packages>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture</type>
+      <description>Client-side only processing - no API routes allowed</description>
+      <source>docs/epic-1-context.md#System-Architecture-Alignment</source>
+    </constraint>
+    <constraint>
+      <type>UI Framework</type>
+      <description>Tailwind CSS utility classes for styling and animations - no custom CSS files except globals.css</description>
+      <source>docs/stories/story-pdf-image-conversion-2.md#Dev-Notes</source>
+    </constraint>
+    <constraint>
+      <type>State Management</type>
+      <description>React hooks (useState, useEffect) for state management - no global state management library</description>
+      <source>docs/stories/story-pdf-image-conversion-2.md#Dev-Notes</source>
+    </constraint>
+    <constraint>
+      <type>Error Handling</type>
+      <description>Error boundaries required for React error handling</description>
+      <source>docs/stories/story-pdf-image-conversion-2.md#Dev-Notes</source>
+    </constraint>
+    <constraint>
+      <type>Accessibility</type>
+      <description>ARIA labels required on all interactive elements. Keyboard navigation must be supported. WCAG AA color contrast standards.</description>
+      <source>docs/stories/story-pdf-image-conversion-2.md#Dev-Notes</source>
+    </constraint>
+    <constraint>
+      <type>Responsive Design</type>
+      <description>Responsive design must work on mobile/tablet/desktop using Tailwind breakpoints</description>
+      <source>docs/stories/story-pdf-image-conversion-2.md#Dev-Notes</source>
+    </constraint>
+    <constraint>
+      <type>Browser Compatibility</type>
+      <description>Must work on Chrome/Edge 90+, Firefox 88+, Safari 14+ with graceful degradation</description>
+      <source>docs/epic-1-context.md#Non-Functional-Requirements</source>
+    </constraint>
+    <constraint>
+      <type>Performance</type>
+      <description>Conversion must complete within 30 seconds for typical files. UI must remain responsive during conversion.</description>
+      <source>docs/epic-1-context.md#Non-Functional-Requirements</source>
+    </constraint>
+    <constraint>
+      <type>Memory</type>
+      <description>Blob URLs must be cleaned up after downloads. No memory leaks after multiple conversions.</description>
+      <source>docs/stories/story-pdf-image-conversion-2.md#Dev-Notes</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>ConversionControls Component</name>
+      <kind>React Component</kind>
+      <signature>ConversionControls.tsx - Props: { files: UploadedFile[], conversionType: 'pdf-to-images' | 'images-to-pdf', onTypeChange: (type) => void, onConvert: () => void, disabled: boolean }</signature>
+      <path>src/components/ConversionControls.tsx</path>
+    </interface>
+    <interface>
+      <name>ProcessingStatus Component</name>
+      <kind>React Component</kind>
+      <signature>ProcessingStatus.tsx - Props: { status: ConversionState, progress?: { current: number, total: number, message: string } }</signature>
+      <path>src/components/ProcessingStatus.tsx</path>
+    </interface>
+    <interface>
+      <name>useFileConversion Hook</name>
+      <kind>React Hook</kind>
+      <signature>useFileConversion.ts - Returns: { conversionState: ConversionState, startConversion: (type: string) => Promise&lt;void&gt;, resetConversion: () => void }</signature>
+      <path>src/hooks/useFileConversion.ts</path>
+    </interface>
+    <interface>
+      <name>Error Boundary Component</name>
+      <kind>React Component</kind>
+      <signature>ErrorBoundary.tsx - Catches React errors and displays user-friendly error messages</signature>
+      <path>src/components/ErrorBoundary.tsx</path>
+    </interface>
+    <interface>
+      <name>ConversionState Type</name>
+      <kind>TypeScript Interface</kind>
+      <signature>interface ConversionState { type: 'pdf-to-images' | 'images-to-pdf' | null; status: 'idle' | 'processing' | 'success' | 'error'; progress: { current: number; total: number; message: string; }; error: string | null; }</signature>
+      <path>src/types/index.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing framework: Jest 29.7.0 + React Testing Library 14.1.2 for unit/integration tests. Component tests targeting 70% coverage for user interactions and state management. Integration tests for conversion workflows with progress updates. Manual testing checklist covers cross-browser compatibility, edge cases, and accessibility. Performance testing with large files and memory monitoring.
+    </standards>
+    <locations>
+      <location>src/components/__tests__/</location>
+      <location>src/hooks/__tests__/</location>
+      <location>src/app/__tests__/</location>
+    </locations>
+    <ideas>
+      <test ac="AC1">
+        <description>Select conversion type, verify UI updates and button state</description>
+        <type>Unit</type>
+      </test>
+      <test ac="AC2">
+        <description>Trigger conversion, verify progress updates during processing</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC3">
+        <description>Trigger conversion error, verify user-friendly error message displayed</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC4">
+        <description>Complete conversion, verify success message and download trigger</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC5">
+        <description>Test empty list, mixed types, invalid files, large files</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC6">
+        <description>Test on Chrome, Firefox, Safari, verify functionality</description>
+        <type>Manual</type>
+      </test>
+      <test ac="AC7">
+        <description>Multiple conversions, verify blob URL cleanup and no memory leaks</description>
+        <type>Integration</type>
+      </test>
+      <test ac="AC8">
+        <description>Test keyboard navigation, ARIA labels, responsive design</description>
+        <type>Integration</type>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
+
