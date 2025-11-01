@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF ↔ Image Converter - Design Direction Mockups</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #1f2937;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .directions-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e9d5ff;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #7c3aed;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #faf5ff;
+            border-color: #7c3aed;
+        }
+
+        .nav-btn.active {
+            background: #7c3aed;
+            color: white;
+            border-color: #7c3aed;
+        }
+
+        .direction-container {
+            display: none;
+        }
+
+        .direction-container.active {
+            display: block;
+        }
+
+        .direction-header {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .direction-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 0.5rem;
+        }
+
+        .direction-personality {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .direction-description {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .direction-characteristics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .characteristic {
+            padding: 1rem;
+            background: #faf5ff;
+            border-radius: 8px;
+        }
+
+        .characteristic-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .characteristic-value {
+            font-weight: 600;
+            color: #7c3aed;
+        }
+
+        .mockup-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .mockup-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        /* Mockup Styles - Using Theme 5 Colors */
+        .mockup {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #faf5ff;
+            border-radius: 12px;
+            padding: 2rem;
+            min-height: 600px;
+        }
+
+        .mockup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .mockup-h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .mockup-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed #e9d5ff;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: white;
+            margin-bottom: 2rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: #7c3aed;
+            background: #faf5ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .file-list {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            background: white;
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .file-meta {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #6d28d9;
+        }
+
+        .btn-secondary {
+            background: #f0fdf4;
+            color: #10b981;
+            border: 1px solid #dcfce7;
+        }
+
+        .btn-secondary:hover {
+            background: #dcfce7;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .conversion-controls {
+            background: white;
+            border: 1px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .radio-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .radio-input {
+            margin-right: 0.75rem;
+            accent-color: #7c3aed;
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .convert-btn:hover {
+            background: #6d28d9;
+        }
+
+        .convert-btn:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .status-alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        /* Direction-specific styles */
+        .direction-1 .mockup {
+            padding: 1.5rem;
+        }
+
+        .direction-1 .upload-zone {
+            padding: 2rem;
+        }
+
+        .direction-2 .mockup {
+            padding: 3rem;
+        }
+
+        .direction-2 .file-item {
+            padding: 1.25rem;
+        }
+
+        .direction-3 .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .direction-3 .file-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .direction-4 .mockup {
+            max-width: 1200px;
+        }
+
+        .direction-4 .layout-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e9d5ff;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .sidebar-nav li.active {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .instructions {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .instructions h2 {
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .instructions p {
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .instructions ul {
+            margin-left: 1.5rem;
+            color: #64748b;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Design Direction Mockups</h1>
+        <p class="subtitle">Explore different UX approaches for your PDF ↔ Image Converter</p>
+
+        <div class="directions-nav">
+            <button class="nav-btn active" onclick="showDirection(1)">1. Spacious & Clean</button>
+            <button class="nav-btn" onclick="showDirection(2)">2. Balanced & Structured</button>
+            <button class="nav-btn" onclick="showDirection(3)">3. Card Gallery</button>
+            <button class="nav-btn" onclick="showDirection(4)">4. Dashboard Layout</button>
+        </div>
+
+        <!-- Direction 1: Spacious & Clean -->
+        <div id="direction-1" class="direction-container active direction-1">
+            <div class="direction-header">
+                <div class="direction-title">1. Spacious & Clean</div>
+                <div class="direction-personality">Minimal • Focused • Breathing Room</div>
+                <div class="direction-description">
+                    Maximum white space, minimal visual noise. Every element has room to breathe. 
+                    Perfect for users who want zero distractions - just upload, convert, download. 
+                    The interface feels calm and uncluttered. <strong>Smart conversion button</strong> automatically 
+                    detects file types and shows the appropriate action - no decision needed!
+                </div>
+                <div class="direction-characteristics">
+                    <div class="characteristic">
+                        <div class="characteristic-label">Layout</div>
+                        <div class="characteristic-value">Single Column</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Density</div>
+                        <div class="characteristic-value">Very Spacious</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Visual Weight</div>
+                        <div class="characteristic-value">Minimal</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Best For</div>
+                        <div class="characteristic-value">Quick conversions, clarity</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-title">Main Conversion Screen</div>
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-h1">PDF ↔ Image Converter</div>
+                        <div class="mockup-subtitle">Convert between PDF and image formats in your browser</div>
+                    </div>
+
+                    <div class="upload-zone">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drag and drop files here</div>
+                        <div class="upload-hint">or click to select • PDF, PNG, JPG, JPEG, WEBP</div>
+                    </div>
+
+                    <div class="file-list">
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">document.pdf</div>
+                                <div class="file-meta">2.3 MB • PDF</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversion-controls" style="text-align: center;">
+                        <button class="convert-btn" style="max-width: 300px; margin: 0 auto; display: block;">
+                            Convert to Images
+                        </button>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #64748b;">
+                            Detected: PDF files uploaded
+                        </div>
+                    </div>
+
+                    <div class="status-alert status-success">
+                        ✓ Conversion complete! Ready to download.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-title">Main Conversion Screen - Image Files Uploaded</div>
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-h1">PDF ↔ Image Converter</div>
+                        <div class="mockup-subtitle">Convert between PDF and image formats in your browser</div>
+                    </div>
+
+                    <div class="upload-zone">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drag and drop files here</div>
+                        <div class="upload-hint">or click to select • PDF, PNG, JPG, JPEG, WEBP</div>
+                    </div>
+
+                    <div class="file-list">
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">photo.jpg</div>
+                                <div class="file-meta">1.8 MB • JPG</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">image.png</div>
+                                <div class="file-meta">2.1 MB • PNG</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversion-controls" style="text-align: center;">
+                        <button class="convert-btn" style="max-width: 300px; margin: 0 auto; display: block;">
+                            Convert to PDF
+                        </button>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #64748b;">
+                            Detected: Image files uploaded
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-title">Main Conversion Screen - Mixed Files Uploaded</div>
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-h1">PDF ↔ Image Converter</div>
+                        <div class="mockup-subtitle">Convert between PDF and image formats in your browser</div>
+                    </div>
+
+                    <div class="upload-zone">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drag and drop files here</div>
+                        <div class="upload-hint">or click to select • PDF, PNG, JPG, JPEG, WEBP</div>
+                    </div>
+
+                    <div class="file-list">
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">document.pdf</div>
+                                <div class="file-meta">2.3 MB • PDF</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">photo.jpg</div>
+                                <div class="file-meta">1.8 MB • JPG</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversion-controls" style="text-align: center;">
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; margin: 0 auto;">
+                            <button class="convert-btn" style="width: 100%;">
+                                Convert PDFs to Images
+                            </button>
+                            <button class="convert-btn" style="width: 100%; background: #10b981;">
+                                Convert Images to PDF
+                            </button>
+                        </div>
+                        <div style="margin-top: 0.75rem; font-size: 0.85rem; color: #64748b;">
+                            Detected: Both PDF and image files uploaded
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 2: Balanced & Structured -->
+        <div id="direction-2" class="direction-container direction-2">
+            <div class="direction-header">
+                <div class="direction-title">2. Balanced & Structured</div>
+                <div class="direction-personality">Organized • Clear Hierarchy • Professional</div>
+                <div class="direction-description">
+                    Well-organized sections with clear visual hierarchy. Information is grouped logically 
+                    and easy to scan. Professional feel with moderate spacing - not too sparse, not too dense. 
+                    Perfect balance between efficiency and clarity.
+                </div>
+                <div class="direction-characteristics">
+                    <div class="characteristic">
+                        <div class="characteristic-label">Layout</div>
+                        <div class="characteristic-value">Structured Sections</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Density</div>
+                        <div class="characteristic-value">Balanced</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Visual Weight</div>
+                        <div class="characteristic-value">Moderate</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Best For</div>
+                        <div class="characteristic-value">Work tools, professional use</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-title">Main Conversion Screen</div>
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-h1">PDF ↔ Image Converter</div>
+                        <div class="mockup-subtitle">Convert between PDF and image formats in your browser</div>
+                    </div>
+
+                    <div class="upload-zone">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drag and drop files here, or click to select</div>
+                        <div class="upload-hint">Supported formats: PDF, PNG, JPG, JPEG, WEBP (max 50MB per file, 20 files max)</div>
+                    </div>
+
+                    <div class="file-list">
+                        <div style="font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Uploaded Files (2)</div>
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">document.pdf</div>
+                                <div class="file-meta">2.3 MB • PDF • Ready to convert</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        <div class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">image.png</div>
+                                <div class="file-meta">1.8 MB • PNG • Ready to convert</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conversion-controls">
+                        <div class="controls-title">Conversion Options</div>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" class="radio-input" name="convert-type-2" id="pdf-images-2" checked>
+                                <label for="pdf-images-2">PDF → Images (ZIP file)</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" class="radio-input" name="convert-type-2" id="images-pdf-2">
+                                <label for="images-pdf-2">Images → PDF (Single file)</label>
+                            </div>
+                        </div>
+                        <button class="convert-btn">Convert Files</button>
+                    </div>
+
+                    <div class="status-alert status-processing">
+                        ⏳ Processing file 1 of 2: document.pdf... (65%)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 3: Card Gallery -->
+        <div id="direction-3" class="direction-container direction-3">
+            <div class="direction-header">
+                <div class="direction-title">3. Card Gallery</div>
+                <div class="direction-personality">Visual • Scannable • Modern</div>
+                <div class="direction-description">
+                    Files displayed as cards in a grid layout. Highly visual and scannable. 
+                    Each file is clearly separated and easy to identify. Modern, gallery-like feel. 
+                    Great for users who work with many files and want quick visual recognition.
+                </div>
+                <div class="direction-characteristics">
+                    <div class="characteristic">
+                        <div class="characteristic-label">Layout</div>
+                        <div class="characteristic-value">Grid Cards</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Density</div>
+                        <div class="characteristic-value">Moderate</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Visual Weight</div>
+                        <div class="characteristic-value">Card-Based</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Best For</div>
+                        <div class="characteristic-value">Multiple files, visual browsing</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-title">Main Conversion Screen</div>
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-h1">PDF ↔ Image Converter</div>
+                        <div class="mockup-subtitle">Convert between PDF and image formats in your browser</div>
+                    </div>
+
+                    <div class="upload-zone" style="margin-bottom: 2rem;">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Add files</div>
+                        <div class="upload-hint">Drag and drop or click to select</div>
+                    </div>
+
+                    <div class="file-list">
+                        <div class="file-item">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
+                            <div class="file-info">
+                                <div class="file-name">document.pdf</div>
+                                <div class="file-meta">2.3 MB</div>
+                            </div>
+                            <button class="btn btn-danger" style="width: 100%; margin-top: 0.5rem;">Remove</button>
+                        </div>
+                        <div class="file-item">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🖼️</div>
+                            <div class="file-info">
+                                <div class="file-name">image.png</div>
+                                <div class="file-meta">1.8 MB</div>
+                            </div>
+                            <button class="btn btn-danger" style="width: 100%; margin-top: 0.5rem;">Remove</button>
+                        </div>
+                    </div>
+
+                    <div class="conversion-controls">
+                        <div class="controls-title">Convert To</div>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" class="radio-input" name="convert-type-3" id="pdf-images-3" checked>
+                                <label for="pdf-images-3">PDF → Images</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" class="radio-input" name="convert-type-3" id="images-pdf-3">
+                                <label for="images-pdf-3">Images → PDF</label>
+                            </div>
+                        </div>
+                        <button class="convert-btn">Convert</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction 4: Dashboard Layout -->
+        <div id="direction-4" class="direction-container direction-4">
+            <div class="direction-header">
+                <div class="direction-title">4. Dashboard Layout</div>
+                <div class="direction-personality">Information-Rich • Organized • Comprehensive</div>
+                <div class="direction-description">
+                    Sidebar navigation with main content area. More structured approach with dedicated sections. 
+                    Feels like a full application. Best for users who want all information visible and organized 
+                    with clear navigation patterns.
+                </div>
+                <div class="direction-characteristics">
+                    <div class="characteristic">
+                        <div class="characteristic-label">Layout</div>
+                        <div class="characteristic-value">Sidebar + Main</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Density</div>
+                        <div class="characteristic-value">Information-Rich</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Visual Weight</div>
+                        <div class="characteristic-value">Structured</div>
+                    </div>
+                    <div class="characteristic">
+                        <div class="characteristic-label">Best For</div>
+                        <div class="characteristic-value">Complex workflows, power users</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-title">Main Conversion Screen</div>
+                <div class="mockup">
+                    <div class="layout-grid">
+                        <div class="sidebar">
+                            <ul class="sidebar-nav">
+                                <li class="active">Convert</li>
+                                <li>History</li>
+                                <li>Settings</li>
+                            </ul>
+                        </div>
+                        <div style="flex: 1;">
+                            <div class="mockup-header" style="text-align: left; margin-bottom: 2rem;">
+                                <div class="mockup-h1">PDF ↔ Image Converter</div>
+                                <div class="mockup-subtitle">Convert between PDF and image formats</div>
+                            </div>
+
+                            <div class="upload-zone">
+                                <div class="upload-icon">📁</div>
+                                <div class="upload-text">Drag and drop files here</div>
+                                <div class="upload-hint">or click to select</div>
+                            </div>
+
+                            <div class="file-list">
+                                <div style="font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Files (2)</div>
+                                <div class="file-item">
+                                    <div class="file-info">
+                                        <div class="file-name">document.pdf</div>
+                                        <div class="file-meta">2.3 MB • PDF</div>
+                                    </div>
+                                    <div class="file-actions">
+                                        <button class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="file-item">
+                                    <div class="file-info">
+                                        <div class="file-name">image.png</div>
+                                        <div class="file-meta">1.8 MB • PNG</div>
+                                    </div>
+                                    <div class="file-actions">
+                                        <button class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="conversion-controls">
+                                <div class="controls-title">Conversion Options</div>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" class="radio-input" name="convert-type-4" id="pdf-images-4" checked>
+                                        <label for="pdf-images-4">PDF → Images</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" class="radio-input" name="convert-type-4" id="images-pdf-4">
+                                        <label for="images-pdf-4">Images → PDF</label>
+                                    </div>
+                                </div>
+                                <button class="convert-btn">Convert Files</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>Next Steps</h2>
+            <p>Explore each design direction by clicking the navigation buttons above. Consider:</p>
+            <ul>
+                <li>Which layout feels most intuitive for your use case?</li>
+                <li>Which information hierarchy matches your priorities?</li>
+                <li>Which visual style fits "Empowered + Efficient + Confident"?</li>
+            </ul>
+            <p><strong>Tell me:</strong> Which direction number (1-4) resonates most? Or combine elements from multiple directions!</p>
+        </div>
+    </div>
+
+    <script>
+        function showDirection(num) {
+            // Hide all directions
+            document.querySelectorAll('.direction-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected direction
+            document.getElementById(`direction-${num}`).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

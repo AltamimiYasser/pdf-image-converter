@@ -19,115 +19,127 @@ export default function ConversionControls({
   isProcessing,
   hasDownloadReady,
 }: ConversionControlsProps) {
-  const [conversionType, setConversionType] = useState<
-    'pdf-to-images' | 'images-to-pdf' | null
-  >(null)
-
-  // Reset conversion type when download is ready (so user can start new conversion after download)
+  // Reset when download is ready (so user can start new conversion after download)
   useEffect(() => {
     if (hasDownloadReady) {
-      setConversionType(null)
+      // Reset handled by parent
     }
   }, [hasDownloadReady])
 
-  const handleConvert = () => {
-    if (conversionType) {
-      onConvert(conversionType)
-    }
+  const handleConvert = (type: 'pdf-to-images' | 'images-to-pdf') => {
+    onConvert(type)
   }
 
   const handleDownload = () => {
     onDownload()
   }
 
-  const canConvert =
-    !isProcessing &&
-    !hasDownloadReady &&
-    conversionType !== null &&
-    ((conversionType === 'pdf-to-images' && canConvertPdfToImages) ||
-      (conversionType === 'images-to-pdf' && canConvertImagesToPdf))
+  const hasMixedFiles = canConvertPdfToImages && canConvertImagesToPdf
+  
+  const canConvertPdfOnly = canConvertPdfToImages && !canConvertImagesToPdf
+  const canConvertImagesOnly = canConvertImagesToPdf && !canConvertPdfToImages
+  const canConvert = !isProcessing && !hasDownloadReady && (canConvertPdfToImages || canConvertImagesToPdf)
   
   const canDownload = hasDownloadReady && !isProcessing
 
   return (
-    <div className="mt-6 sm:mt-8 p-4 sm:p-6 border rounded-lg bg-gray-50">
-      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Conversion Options</h2>
-      
-      <div className="space-y-3 sm:space-y-4">
-        <div>
-          <label className="flex items-center mb-2">
-            <input
-              type="radio"
-              name="conversionType"
-              value="pdf-to-images"
-              checked={conversionType === 'pdf-to-images'}
-              onChange={(e) =>
-                setConversionType(e.target.value as 'pdf-to-images')
-              }
-              disabled={!canConvertPdfToImages || isProcessing || hasDownloadReady}
-              className="mr-2"
-              aria-label="Convert PDF to Images"
-            />
-            <span className={!canConvertPdfToImages ? 'text-gray-400' : ''}>
-              PDF → Images
-            </span>
-          </label>
-          {!canConvertPdfToImages && (
-            <p className="text-xs sm:text-sm text-gray-500 ml-6">
-              No PDF files uploaded
-            </p>
+    <div className="mt-6 sm:mt-8 flex flex-col items-center">
+      {hasDownloadReady ? (
+        <button
+          onClick={handleDownload}
+          aria-label="Download converted file"
+          className="w-full max-w-[300px] px-6 py-3 rounded-lg font-semibold transition-colors text-base bg-success hover:bg-success-hover text-white focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
+        >
+          Download
+        </button>
+      ) : (
+        <div className="w-full max-w-[300px] flex flex-col gap-3">
+          {hasMixedFiles ? (
+            <>
+              {/* Both PDFs and Images uploaded - show both buttons */}
+              <button
+                onClick={() => handleConvert('pdf-to-images')}
+                disabled={isProcessing || !canConvertPdfToImages}
+                aria-label="Convert PDFs to Images"
+                className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                  canConvertPdfToImages && !isProcessing
+                    ? 'bg-primary hover:bg-primary-hover text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Convert PDFs to Images
+              </button>
+              <button
+                onClick={() => handleConvert('images-to-pdf')}
+                disabled={isProcessing || !canConvertImagesToPdf}
+                aria-label="Convert Images to PDF"
+                className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                  canConvertImagesToPdf && !isProcessing
+                    ? 'bg-success hover:bg-success-hover text-white focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Convert Images to PDF
+              </button>
+              <p className="text-xs sm:text-sm text-neutral-textSecondary text-center mt-1">
+                Detected: Both PDF and image files uploaded
+              </p>
+            </>
+          ) : canConvertPdfOnly ? (
+            <>
+              {/* Only PDFs uploaded */}
+              <button
+                onClick={() => handleConvert('pdf-to-images')}
+                disabled={!canConvert}
+                aria-label={isProcessing ? 'Converting files' : 'Convert PDFs to Images'}
+                className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                  canConvert
+                    ? 'bg-primary hover:bg-primary-hover text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                {isProcessing ? 'Converting...' : 'Convert to Images'}
+              </button>
+              <p className="text-xs sm:text-sm text-neutral-textSecondary text-center mt-1">
+                Detected: PDF files uploaded
+              </p>
+            </>
+          ) : canConvertImagesOnly ? (
+            <>
+              {/* Only Images uploaded */}
+              <button
+                onClick={() => handleConvert('images-to-pdf')}
+                disabled={!canConvert}
+                aria-label={isProcessing ? 'Converting files' : 'Convert Images to PDF'}
+                className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                  canConvert
+                    ? 'bg-primary hover:bg-primary-hover text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                {isProcessing ? 'Converting...' : 'Convert to PDF'}
+              </button>
+              <p className="text-xs sm:text-sm text-neutral-textSecondary text-center mt-1">
+                Detected: Image files uploaded
+              </p>
+            </>
+          ) : (
+            <>
+              {/* No compatible files */}
+              <button
+                disabled
+                aria-label="No files to convert"
+                className="w-full px-6 py-3 rounded-lg font-semibold text-base bg-gray-300 text-gray-500 cursor-not-allowed"
+              >
+                Convert Files
+              </button>
+              <p className="text-xs sm:text-sm text-neutral-textSecondary text-center mt-1">
+                Upload PDF or image files to convert
+              </p>
+            </>
           )}
         </div>
-
-        <div>
-          <label className="flex items-center mb-2">
-            <input
-              type="radio"
-              name="conversionType"
-              value="images-to-pdf"
-              checked={conversionType === 'images-to-pdf'}
-              onChange={(e) =>
-                setConversionType(e.target.value as 'images-to-pdf')
-              }
-              disabled={!canConvertImagesToPdf || isProcessing || hasDownloadReady}
-              className="mr-2"
-              aria-label="Convert Images to PDF"
-            />
-            <span className={!canConvertImagesToPdf ? 'text-gray-400' : ''}>
-              Images → PDF
-            </span>
-          </label>
-          {!canConvertImagesToPdf && (
-            <p className="text-xs sm:text-sm text-gray-500 ml-6">
-              No image files uploaded
-            </p>
-          )}
-        </div>
-
-        {hasDownloadReady ? (
-          <button
-            onClick={handleDownload}
-            aria-label="Download converted file"
-            className="w-full px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          >
-            Download
-          </button>
-        ) : (
-          <button
-            onClick={handleConvert}
-            disabled={!canConvert}
-            aria-label={isProcessing ? 'Converting files' : 'Start conversion'}
-            className={`w-full px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
-              canConvert
-                ? 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            {isProcessing ? 'Converting...' : 'Convert'}
-          </button>
-        )}
-      </div>
+      )}
     </div>
   )
 }
-

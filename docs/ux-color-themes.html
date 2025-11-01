@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF ↔ Image Converter - Color Theme Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #1a1a1a;
+            font-size: 2.5rem;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .theme-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .theme-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .theme-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .theme-personality {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .theme-best-for {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Color Palette Display */
+        .color-palette {
+            margin-bottom: 2rem;
+        }
+
+        .palette-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #333;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .color-label {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        /* Component Examples */
+        .component-section {
+            margin-top: 2rem;
+        }
+
+        .component-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .component-examples {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Theme 1: Professional Efficiency */
+        .theme-1 .theme-title { color: #2563eb; }
+        .theme-1 .primary { background: #2563eb; }
+        .theme-1 .secondary { background: #0ea5e9; }
+        .theme-1 .accent { background: #06b6d4; }
+        .theme-1 .success { background: #10b981; }
+        .theme-1 .warning { background: #f59e0b; }
+        .theme-1 .error { background: #ef4444; }
+        .theme-1 .neutral-1 { background: #f8fafc; }
+        .theme-1 .neutral-2 { background: #e2e8f0; }
+        .theme-1 .neutral-3 { background: #64748b; }
+        .theme-1 .neutral-4 { background: #1e293b; }
+
+        .theme-1 .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .theme-1 .btn-primary:hover { background: #1d4ed8; }
+
+        .theme-1 .btn-secondary {
+            background: #f1f5f9;
+            color: #2563eb;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-1 .btn-secondary:hover { background: #e2e8f0; }
+
+        .theme-1 .input {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .theme-1 .input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .theme-1 .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .theme-1 .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Theme 2: Modern Confidence */
+        .theme-2 .theme-title { color: #7c3aed; }
+        .theme-2 .primary { background: #7c3aed; }
+        .theme-2 .secondary { background: #2563eb; }
+        .theme-2 .accent { background: #8b5cf6; }
+        .theme-2 .success { background: #10b981; }
+        .theme-2 .warning { background: #f59e0b; }
+        .theme-2 .error { background: #ef4444; }
+        .theme-2 .neutral-1 { background: #faf5ff; }
+        .theme-2 .neutral-2 { background: #e9d5ff; }
+        .theme-2 .neutral-3 { background: #6b7280; }
+        .theme-2 .neutral-4 { background: #1f2937; }
+
+        .theme-2 .btn-primary {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .theme-2 .btn-primary:hover { background: #6d28d9; }
+
+        .theme-2 .btn-secondary {
+            background: #faf5ff;
+            color: #7c3aed;
+            border: 1px solid #e9d5ff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-2 .btn-secondary:hover { background: #e9d5ff; }
+
+        .theme-2 .input {
+            border: 1px solid #e9d5ff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .theme-2 .input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .theme-2 .card {
+            background: white;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .theme-2 .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Theme 3: Clean Productivity */
+        .theme-3 .theme-title { color: #10b981; }
+        .theme-3 .primary { background: #10b981; }
+        .theme-3 .secondary { background: #2563eb; }
+        .theme-3 .accent { background: #06b6d4; }
+        .theme-3 .success { background: #10b981; }
+        .theme-3 .warning { background: #f59e0b; }
+        .theme-3 .error { background: #ef4444; }
+        .theme-3 .neutral-1 { background: #f0fdf4; }
+        .theme-3 .neutral-2 { background: #dcfce7; }
+        .theme-3 .neutral-3 { background: #64748b; }
+        .theme-3 .neutral-4 { background: #1e293b; }
+
+        .theme-3 .btn-primary {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .theme-3 .btn-primary:hover { background: #059669; }
+
+        .theme-3 .btn-secondary {
+            background: #f0fdf4;
+            color: #10b981;
+            border: 1px solid #dcfce7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-3 .btn-secondary:hover { background: #dcfce7; }
+
+        .theme-3 .input {
+            border: 1px solid #dcfce7;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .theme-3 .input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .theme-3 .card {
+            background: white;
+            border: 1px solid #dcfce7;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .theme-3 .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Theme 4: Minimalist Power */
+        .theme-4 .theme-title { color: #1e293b; }
+        .theme-4 .primary { background: #2563eb; }
+        .theme-4 .secondary { background: #475569; }
+        .theme-4 .accent { background: #0ea5e9; }
+        .theme-4 .success { background: #10b981; }
+        .theme-4 .warning { background: #f59e0b; }
+        .theme-4 .error { background: #ef4444; }
+        .theme-4 .neutral-1 { background: #f8fafc; }
+        .theme-4 .neutral-2 { background: #e2e8f0; }
+        .theme-4 .neutral-3 { background: #64748b; }
+        .theme-4 .neutral-4 { background: #1e293b; }
+
+        .theme-4 .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .theme-4 .btn-primary:hover { background: #1d4ed8; }
+
+        .theme-4 .btn-secondary {
+            background: #f8fafc;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-4 .btn-secondary:hover { background: #e2e8f0; }
+
+        .theme-4 .input {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .theme-4 .input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .theme-4 .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .theme-4 .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Theme 5: Hybrid - Bold Confidence + Calm Productivity */
+        .theme-5 .theme-title { color: #7c3aed; }
+        .theme-5 .primary { background: #7c3aed; }
+        .theme-5 .secondary { background: #2563eb; }
+        .theme-5 .accent { background: #8b5cf6; }
+        .theme-5 .success { background: #10b981; }
+        .theme-5 .warning { background: #f59e0b; }
+        .theme-5 .error { background: #ef4444; }
+        .theme-5 .neutral-1 { background: #faf5ff; }
+        .theme-5 .neutral-2 { background: #e9d5ff; }
+        .theme-5 .neutral-3 { background: #64748b; }
+        .theme-5 .neutral-4 { background: #1f2937; }
+
+        .theme-5 .btn-primary {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .theme-5 .btn-primary:hover { background: #6d28d9; }
+
+        .theme-5 .btn-secondary {
+            background: #f0fdf4;
+            color: #10b981;
+            border: 1px solid #dcfce7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-5 .btn-secondary:hover { background: #dcfce7; }
+
+        .theme-5 .input {
+            border: 1px solid #e9d5ff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .theme-5 .input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .theme-5 .card {
+            background: white;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .theme-5 .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Utility Classes */
+        .btn-disabled {
+            background: #e2e8f0 !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+        }
+
+        .color-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .instructions {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .instructions h2 {
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .instructions p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .instructions ul {
+            margin-left: 1.5rem;
+            color: #666;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Color Theme Explorer</h1>
+
+        <div class="instructions">
+            <h2>How to Use This Visualizer</h2>
+            <p>Explore 4 complete color theme options for your PDF ↔ Image Converter:</p>
+            <ul>
+                <li><strong>Color Palettes:</strong> See all colors in each theme with hex codes</li>
+                <li><strong>Component Examples:</strong> See how buttons, inputs, and cards look in each theme</li>
+                <li><strong>Personality:</strong> Each theme has a different emotional feel</li>
+            </ul>
+            <p><strong>Take your time</strong> exploring each theme. Which one feels right for "Empowered + Efficient + Confident"?</p>
+        </div>
+
+        <div class="theme-grid">
+            <!-- Theme 1: Professional Efficiency -->
+            <div class="theme-card theme-1">
+                <div class="theme-header">
+                    <div class="theme-title">1. Professional Efficiency</div>
+                    <div class="theme-personality">Trustworthy • Efficient • Confident</div>
+                    <div class="theme-best-for">Best for: Work tools, professional utilities</div>
+                </div>
+
+                <div class="color-palette">
+                    <div class="palette-title">Primary Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch primary">#2563eb</div>
+                            <div class="color-label">Primary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch secondary">#0ea5e9</div>
+                            <div class="color-label">Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch accent">#06b6d4</div>
+                            <div class="color-label">Accent</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Semantic Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch success">#10b981</div>
+                            <div class="color-label">Success</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch warning">#f59e0b</div>
+                            <div class="color-label">Warning</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch error">#ef4444</div>
+                            <div class="color-label">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Neutral Grays</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch neutral-1" style="color: #333;">#f8fafc</div>
+                            <div class="color-label">Background</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-2" style="color: #333;">#e2e8f0</div>
+                            <div class="color-label">Border</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-3">#64748b</div>
+                            <div class="color-label">Text Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-4">#1e293b</div>
+                            <div class="color-label">Text Primary</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-section">
+                    <div class="component-title">Component Examples</div>
+                    <div class="component-examples">
+                        <button class="btn-primary">Convert Files</button>
+                        <button class="btn-secondary">Cancel</button>
+                        <button class="btn-primary btn-disabled">Disabled</button>
+                        <input type="text" class="input" placeholder="File name...">
+                        <div class="card">
+                            <strong>File: document.pdf</strong><br>
+                            <small style="color: #64748b;">2.3 MB • Ready to convert</small>
+                        </div>
+                        <div class="alert-success">✓ Conversion complete!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 2: Modern Confidence -->
+            <div class="theme-card theme-2">
+                <div class="theme-header">
+                    <div class="theme-title">2. Modern Confidence</div>
+                    <div class="theme-personality">Bold • Empowering • Modern</div>
+                    <div class="theme-best-for">Best for: Standout tools, creative professionals</div>
+                </div>
+
+                <div class="color-palette">
+                    <div class="palette-title">Primary Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch primary">#7c3aed</div>
+                            <div class="color-label">Primary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch secondary">#2563eb</div>
+                            <div class="color-label">Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch accent">#8b5cf6</div>
+                            <div class="color-label">Accent</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Semantic Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch success">#10b981</div>
+                            <div class="color-label">Success</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch warning">#f59e0b</div>
+                            <div class="color-label">Warning</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch error">#ef4444</div>
+                            <div class="color-label">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Neutral Grays</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch neutral-1" style="color: #333;">#faf5ff</div>
+                            <div class="color-label">Background</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-2" style="color: #333;">#e9d5ff</div>
+                            <div class="color-label">Border</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-3">#6b7280</div>
+                            <div class="color-label">Text Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-4">#1f2937</div>
+                            <div class="color-label">Text Primary</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-section">
+                    <div class="component-title">Component Examples</div>
+                    <div class="component-examples">
+                        <button class="btn-primary">Convert Files</button>
+                        <button class="btn-secondary">Cancel</button>
+                        <button class="btn-primary btn-disabled">Disabled</button>
+                        <input type="text" class="input" placeholder="File name...">
+                        <div class="card">
+                            <strong>File: document.pdf</strong><br>
+                            <small style="color: #6b7280;">2.3 MB • Ready to convert</small>
+                        </div>
+                        <div class="alert-success">✓ Conversion complete!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 3: Clean Productivity -->
+            <div class="theme-card theme-3">
+                <div class="theme-header">
+                    <div class="theme-title">3. Clean Productivity</div>
+                    <div class="theme-personality">Calm • Productive • Reassuring</div>
+                    <div class="theme-best-for">Best for: Stress-free, reliable utilities</div>
+                </div>
+
+                <div class="color-palette">
+                    <div class="palette-title">Primary Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch primary">#10b981</div>
+                            <div class="color-label">Primary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch secondary">#2563eb</div>
+                            <div class="color-label">Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch accent">#06b6d4</div>
+                            <div class="color-label">Accent</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Semantic Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch success">#10b981</div>
+                            <div class="color-label">Success</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch warning">#f59e0b</div>
+                            <div class="color-label">Warning</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch error">#ef4444</div>
+                            <div class="color-label">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Neutral Grays</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch neutral-1" style="color: #333;">#f0fdf4</div>
+                            <div class="color-label">Background</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-2" style="color: #333;">#dcfce7</div>
+                            <div class="color-label">Border</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-3">#64748b</div>
+                            <div class="color-label">Text Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-4">#1e293b</div>
+                            <div class="color-label">Text Primary</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-section">
+                    <div class="component-title">Component Examples</div>
+                    <div class="component-examples">
+                        <button class="btn-primary">Convert Files</button>
+                        <button class="btn-secondary">Cancel</button>
+                        <button class="btn-primary btn-disabled">Disabled</button>
+                        <input type="text" class="input" placeholder="File name...">
+                        <div class="card">
+                            <strong>File: document.pdf</strong><br>
+                            <small style="color: #64748b;">2.3 MB • Ready to convert</small>
+                        </div>
+                        <div class="alert-success">✓ Conversion complete!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 4: Minimalist Power -->
+            <div class="theme-card theme-4">
+                <div class="theme-header">
+                    <div class="theme-title">4. Minimalist Power</div>
+                    <div class="theme-personality">Clean • Focused • Confident</div>
+                    <div class="theme-best-for">Best for: Minimal, distraction-free tools</div>
+                </div>
+
+                <div class="color-palette">
+                    <div class="palette-title">Primary Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch primary">#2563eb</div>
+                            <div class="color-label">Primary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch secondary">#475569</div>
+                            <div class="color-label">Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch accent">#0ea5e9</div>
+                            <div class="color-label">Accent</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Semantic Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch success">#10b981</div>
+                            <div class="color-label">Success</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch warning">#f59e0b</div>
+                            <div class="color-label">Warning</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch error">#ef4444</div>
+                            <div class="color-label">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Neutral Grays</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch neutral-1" style="color: #333;">#f8fafc</div>
+                            <div class="color-label">Background</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-2" style="color: #333;">#e2e8f0</div>
+                            <div class="color-label">Border</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-3">#64748b</div>
+                            <div class="color-label">Text Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-4">#1e293b</div>
+                            <div class="color-label">Text Primary</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-section">
+                    <div class="component-title">Component Examples</div>
+                    <div class="component-examples">
+                        <button class="btn-primary">Convert Files</button>
+                        <button class="btn-secondary">Cancel</button>
+                        <button class="btn-primary btn-disabled">Disabled</button>
+                        <input type="text" class="input" placeholder="File name...">
+                        <div class="card">
+                            <strong>File: document.pdf</strong><br>
+                            <small style="color: #64748b;">2.3 MB • Ready to convert</small>
+                        </div>
+                        <div class="alert-success">✓ Conversion complete!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 5: Hybrid - Bold Confidence + Calm Productivity -->
+            <div class="theme-card theme-5" style="border: 3px solid #7c3aed;">
+                <div class="theme-header">
+                    <div class="theme-title">5. Hybrid ✨ (Your Pick!)</div>
+                    <div class="theme-personality">Bold • Empowering • Productive • Confident</div>
+                    <div class="theme-best-for">Best for: Tools that need both power and calm</div>
+                </div>
+
+                <div class="color-palette">
+                    <div class="palette-title">Primary Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch primary">#7c3aed</div>
+                            <div class="color-label">Primary (Purple)</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch secondary">#2563eb</div>
+                            <div class="color-label">Secondary (Blue)</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch accent">#8b5cf6</div>
+                            <div class="color-label">Accent</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Semantic Colors</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch success">#10b981</div>
+                            <div class="color-label">Success (Green)</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch warning">#f59e0b</div>
+                            <div class="color-label">Warning</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch error">#ef4444</div>
+                            <div class="color-label">Error</div>
+                        </div>
+                    </div>
+
+                    <div class="palette-title">Neutral Grays</div>
+                    <div class="color-grid">
+                        <div>
+                            <div class="color-swatch neutral-1" style="color: #333;">#faf5ff</div>
+                            <div class="color-label">Background</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-2" style="color: #333;">#e9d5ff</div>
+                            <div class="color-label">Border</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-3">#64748b</div>
+                            <div class="color-label">Text Secondary</div>
+                        </div>
+                        <div>
+                            <div class="color-swatch neutral-4">#1f2937</div>
+                            <div class="color-label">Text Primary</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-section">
+                    <div class="component-title">Component Examples</div>
+                    <div class="component-examples">
+                        <button class="btn-primary">Convert Files</button>
+                        <button class="btn-secondary">Cancel</button>
+                        <button class="btn-primary btn-disabled">Disabled</button>
+                        <input type="text" class="input" placeholder="File name...">
+                        <div class="card">
+                            <strong>File: document.pdf</strong><br>
+                            <small style="color: #64748b;">2.3 MB • Ready to convert</small>
+                        </div>
+                        <div class="alert-success">✓ Conversion complete!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>Next Steps</h2>
+            <p>After exploring these themes, tell me:</p>
+            <ul>
+                <li>Which theme number (1-5) feels right?</li>
+                <li><strong>Theme 5 is a hybrid</strong> combining the bold purple from #2 with the calm green from #3!</li>
+                <li>Or request variations: "Make #5 more vibrant" or "Softer purple"</li>
+            </ul>
+            <p><strong>Remember:</strong> You want users to feel <strong>Empowered + Efficient + Confident</strong> - which theme best supports that?</p>
+        </div>
+    </div>
+</body>
+</html>

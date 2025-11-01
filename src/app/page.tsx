@@ -214,12 +214,14 @@ export default function Home() {
     <ErrorBoundary>
       <main className="min-h-screen p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-center">
-            PDF ↔ Image Converter
-          </h1>
-          <p className="text-center mb-6 sm:mb-8 text-gray-600 text-sm sm:text-base">
-            Convert between PDF and image formats in your browser
-          </p>
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-neutral-textPrimary">
+              PDF ↔ Image Converter
+            </h1>
+            <p className="text-neutral-textSecondary text-sm sm:text-base">
+              Convert between PDF and image formats in your browser
+            </p>
+          </div>
           
           <FileUploader onFilesAdded={handleFilesAdded} currentFileCount={files.length} />
           

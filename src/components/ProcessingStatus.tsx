@@ -17,11 +17,11 @@ export default function ProcessingStatus({ state }: ProcessingStatusProps) {
       : 0
 
   return (
-    <div className="mt-6 p-4 rounded-lg">
+    <div className="mt-6">
       {state.status === 'processing' && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center mb-3">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-secondary mr-3"></div>
             <div className="flex-1">
               <p className="font-semibold text-blue-900">Processing...</p>
               {state.progress.message && (
@@ -39,7 +39,7 @@ export default function ProcessingStatus({ state }: ProcessingStatusProps) {
               </div>
               <div className="w-full bg-blue-200 rounded-full h-2.5">
                 <div
-                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+                  className="bg-secondary h-2.5 rounded-full transition-all duration-300 ease-out"
                   style={{ width: `${progressPercentage}%` }}
                 ></div>
               </div>
@@ -49,10 +49,10 @@ export default function ProcessingStatus({ state }: ProcessingStatusProps) {
       )}
 
       {state.status === 'success' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 animate-fade-in">
+        <div className="bg-success-light border border-success rounded-lg p-4 animate-fade-in">
           <div className="flex items-center">
             <svg
-              className="w-5 h-5 text-green-600 mr-2"
+              className="w-5 h-5 text-success mr-2"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -64,10 +64,10 @@ export default function ProcessingStatus({ state }: ProcessingStatusProps) {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <p className="font-semibold text-green-900">Conversion Complete!</p>
+            <p className="font-semibold text-success-dark">Conversion Complete!</p>
           </div>
           {state.progress.message && (
-            <p className="text-sm text-green-700 mt-1">
+            <p className="text-sm text-success-dark mt-1">
               {state.progress.message}
             </p>
           )}
@@ -75,10 +75,10 @@ export default function ProcessingStatus({ state }: ProcessingStatusProps) {
       )}
 
       {state.status === 'error' && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-fade-in">
+        <div className="bg-error-light border border-error rounded-lg p-4 animate-fade-in">
           <div className="flex items-center">
             <svg
-              className="w-5 h-5 text-red-600 mr-2"
+              className="w-5 h-5 text-error mr-2"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -90,14 +90,13 @@ export default function ProcessingStatus({ state }: ProcessingStatusProps) {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-            <p className="font-semibold text-red-900">Conversion Failed</p>
+            <p className="font-semibold text-error">Conversion Failed</p>
           </div>
           {state.error && (
-            <p className="text-sm text-red-700 mt-1">{state.error}</p>
+            <p className="text-sm text-error mt-1">{state.error}</p>
           )}
         </div>
       )}
     </div>
   )
 }
-

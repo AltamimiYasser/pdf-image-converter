@@ -47,7 +47,7 @@ export default function FileUploader({ onFilesAdded, currentFileCount = 0 }: Fil
     e.stopPropagation()
     dragCounterRef.current++
     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      e.currentTarget.classList.add('border-blue-500', 'bg-blue-50')
+      e.currentTarget.classList.add('border-primary', 'bg-neutral-bg')
     }
   }, [])
 
@@ -56,7 +56,7 @@ export default function FileUploader({ onFilesAdded, currentFileCount = 0 }: Fil
     e.stopPropagation()
     dragCounterRef.current--
     if (dragCounterRef.current === 0) {
-      e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50')
+      e.currentTarget.classList.remove('border-primary', 'bg-neutral-bg')
     }
   }, [])
 
@@ -70,7 +70,7 @@ export default function FileUploader({ onFilesAdded, currentFileCount = 0 }: Fil
       e.preventDefault()
       e.stopPropagation()
       dragCounterRef.current = 0
-      e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50')
+      e.currentTarget.classList.remove('border-primary', 'bg-neutral-bg')
 
       const files = e.dataTransfer.files
       processFiles(files)
@@ -108,7 +108,7 @@ export default function FileUploader({ onFilesAdded, currentFileCount = 0 }: Fil
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onKeyDown={handleKeyDown}
-        className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-12 text-center cursor-pointer transition-colors hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 block"
+        className="border-2 border-dashed border-neutral-border rounded-xl p-6 sm:p-12 text-center cursor-pointer transition-all hover:border-primary hover:bg-neutral-bg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 block"
         tabIndex={0}
         aria-label="File upload area"
       >
@@ -122,19 +122,20 @@ export default function FileUploader({ onFilesAdded, currentFileCount = 0 }: Fil
           className="hidden"
           aria-label="File input"
         />
-        <p className="text-base sm:text-lg mb-2">
-          Drag and drop files here, or click to select
+        <div className="text-5xl mb-4">📁</div>
+        <p className="text-base sm:text-lg mb-2 font-semibold text-neutral-textPrimary">
+          Drag and drop files here
         </p>
-        <p className="text-xs sm:text-sm text-gray-500">
-          Supported formats: PDF, PNG, JPG, JPEG, WEBP (max 50MB per file, 20 files max)
+        <p className="text-xs sm:text-sm text-neutral-textSecondary">
+          or click to select • PDF, PNG, JPG, JPEG, WEBP
         </p>
       </label>
       {error && (
-        <div className="mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-xs sm:text-sm text-red-800 font-medium">{error}</p>
+        <div className="mt-4 p-3 sm:p-4 bg-error-light border border-error rounded-lg">
+          <p className="text-xs sm:text-sm text-error font-medium">{error}</p>
           <button
             onClick={() => setError(null)}
-            className="mt-2 text-xs sm:text-sm text-red-600 hover:text-red-800 underline"
+            className="mt-2 text-xs sm:text-sm text-error hover:opacity-80 underline"
             aria-label="Dismiss error"
           >
             Dismiss
@@ -144,4 +145,3 @@ export default function FileUploader({ onFilesAdded, currentFileCount = 0 }: Fil
     </div>
   )
 }
-
