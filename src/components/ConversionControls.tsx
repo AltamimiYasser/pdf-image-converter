@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 interface ConversionControlsProps {
   canConvertPdfToImages: boolean
   canConvertImagesToPdf: boolean
-  onConvert: (type: 'pdf-to-images' | 'images-to-pdf') => void
+  onConvert: (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs') => void
   onDownload: () => void
   isProcessing: boolean
   hasDownloadReady: boolean
@@ -26,7 +26,7 @@ export default function ConversionControls({
     }
   }, [hasDownloadReady])
 
-  const handleConvert = (type: 'pdf-to-images' | 'images-to-pdf') => {
+  const handleConvert = (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs') => {
     onConvert(type)
   }
 
@@ -56,7 +56,7 @@ export default function ConversionControls({
         <div className="w-full max-w-[300px] flex flex-col gap-3">
           {hasMixedFiles ? (
             <>
-              {/* Both PDFs and Images uploaded - show both buttons */}
+              {/* Both PDFs and Images uploaded - show all conversion options */}
               <button
                 onClick={() => handleConvert('pdf-to-images')}
                 disabled={isProcessing || !canConvertPdfToImages}
@@ -68,6 +68,18 @@ export default function ConversionControls({
                 }`}
               >
                 Convert PDFs to Images
+              </button>
+              <button
+                onClick={() => handleConvert('pdf-to-pdfs')}
+                disabled={isProcessing || !canConvertPdfToImages}
+                aria-label="Split PDFs into Pages"
+                className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                  canConvertPdfToImages && !isProcessing
+                    ? 'bg-primary hover:bg-primary-hover text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Split Pages
               </button>
               <button
                 onClick={() => handleConvert('images-to-pdf')}
@@ -87,7 +99,7 @@ export default function ConversionControls({
             </>
           ) : canConvertPdfOnly ? (
             <>
-              {/* Only PDFs uploaded */}
+              {/* Only PDFs uploaded - show both conversion options */}
               <button
                 onClick={() => handleConvert('pdf-to-images')}
                 disabled={!canConvert}
@@ -99,6 +111,18 @@ export default function ConversionControls({
                 }`}
               >
                 {isProcessing ? 'Converting...' : 'Convert to Images'}
+              </button>
+              <button
+                onClick={() => handleConvert('pdf-to-pdfs')}
+                disabled={!canConvert}
+                aria-label={isProcessing ? 'Splitting files' : 'Split PDFs into Pages'}
+                className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                  canConvert
+                    ? 'bg-success hover:bg-success-hover text-white focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                {isProcessing ? 'Splitting...' : 'Split Pages'}
               </button>
               <p className="text-xs sm:text-sm text-neutral-textSecondary text-center mt-1">
                 Detected: PDF files uploaded

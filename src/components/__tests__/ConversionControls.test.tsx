@@ -10,7 +10,7 @@ describe('ConversionControls', () => {
     jest.clearAllMocks()
   })
 
-  it('renders both conversion buttons when mixed files uploaded', () => {
+  it('renders all conversion buttons when mixed files uploaded', () => {
     render(
       <ConversionControls
         canConvertPdfToImages={true}
@@ -23,11 +23,12 @@ describe('ConversionControls', () => {
     )
 
     expect(screen.getByText('Convert PDFs to Images')).toBeInTheDocument()
+    expect(screen.getByText('Split Pages')).toBeInTheDocument()
     expect(screen.getByText('Convert Images to PDF')).toBeInTheDocument()
     expect(screen.getByText(/Detected: Both PDF and image files uploaded/i)).toBeInTheDocument()
   })
 
-  it('renders single button for PDF files only', () => {
+  it('renders both PDF conversion buttons for PDF files only', () => {
     render(
       <ConversionControls
         canConvertPdfToImages={true}
@@ -40,6 +41,7 @@ describe('ConversionControls', () => {
     )
 
     expect(screen.getByText('Convert to Images')).toBeInTheDocument()
+    expect(screen.getByText('Split Pages')).toBeInTheDocument()
     expect(screen.getByText(/Detected: PDF files uploaded/i)).toBeInTheDocument()
     expect(screen.queryByText('Convert Images to PDF')).not.toBeInTheDocument()
   })
@@ -99,6 +101,25 @@ describe('ConversionControls', () => {
     expect(mockOnConvert).toHaveBeenCalledWith('images-to-pdf')
   })
 
+  it('calls onConvert with pdf-to-pdfs when Split Pages button clicked', async () => {
+    const user = userEvent.setup()
+    render(
+      <ConversionControls
+        canConvertPdfToImages={true}
+        canConvertImagesToPdf={false}
+        onConvert={mockOnConvert}
+        onDownload={mockOnDownload}
+        isProcessing={false}
+        hasDownloadReady={false}
+      />
+    )
+
+    const splitButton = screen.getByRole('button', { name: 'Split PDFs into Pages' })
+    await user.click(splitButton)
+
+    expect(mockOnConvert).toHaveBeenCalledWith('pdf-to-pdfs')
+  })
+
   it('disables buttons when no files uploaded', () => {
     render(
       <ConversionControls
@@ -129,9 +150,11 @@ describe('ConversionControls', () => {
     )
 
     const pdfButton = screen.getByRole('button', { name: 'Convert PDFs to Images' })
+    const splitButton = screen.getByRole('button', { name: 'Split PDFs into Pages' })
     const imagesButton = screen.getByRole('button', { name: 'Convert Images to PDF' })
-    
+
     expect(pdfButton).toBeDisabled()
+    expect(splitButton).toBeDisabled()
     expect(imagesButton).toBeDisabled()
   })
 
