@@ -1,5 +1,6 @@
 import JSZip from 'jszip'
 import { generateImageName } from './pdf-converter'
+import { generatePdfPageName } from './pdf-splitter'
 
 export interface ZipFile {
   name: string
@@ -73,6 +74,24 @@ export async function createZipFromPdfImages(
       })
     })
   }
+
+  return zip.generateAsync({ type: 'blob' })
+}
+
+export async function createZipFromSplitPdfs(
+  pdfFiles: File[],
+  pdfsPerFile: Map<string, Blob[]>
+): Promise<Blob> {
+  const zip = new JSZip()
+
+  // Always use flat structure (no subdirectories)
+  pdfFiles.forEach((pdfFile) => {
+    const pdfPages = pdfsPerFile.get(pdfFile.name) || []
+    pdfPages.forEach((pdfBlob, index) => {
+      const pdfPageName = generatePdfPageName(pdfFile.name, index + 1, pdfPages.length)
+      zip.file(pdfPageName, pdfBlob)
+    })
+  })
 
   return zip.generateAsync({ type: 'blob' })
 }

@@ -9,8 +9,9 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import { UploadedFile, ConversionState } from '@/types'
 import { isPDF, isImage } from '@/lib/file-utils'
 import { convertPdfToImages } from '@/lib/pdf-converter'
-import { createZipFromPdfImages } from '@/lib/zip-utils'
+import { createZipFromPdfImages, createZipFromSplitPdfs } from '@/lib/zip-utils'
 import { convertImagesToPdf } from '@/lib/image-converter'
+import { splitPdfIntoPages } from '@/lib/pdf-splitter'
 
 export default function Home() {
   const [files, setFiles] = useState<UploadedFile[]>([])
@@ -33,7 +34,7 @@ export default function Home() {
     setFiles(reorderedFiles)
   }
 
-  const handleConvert = async (type: 'pdf-to-images' | 'images-to-pdf') => {
+  const handleConvert = async (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs') => {
     try {
       setConversionState({
         type,
@@ -108,6 +109,71 @@ export default function Home() {
           error: null,
           downloadBlob: zipBlob,
           downloadFileName: 'converted-images.zip',
+        })
+      } else if (type === 'pdf-to-pdfs') {
+        const pdfFiles = files.filter((f) => isPDF(f.file))
+        const pdfsPerFile = new Map<string, Blob[]>()
+
+        for (let i = 0; i < pdfFiles.length; i++) {
+          const pdfFile = pdfFiles[i]
+          const fileIndex = i + 1
+          const totalFiles = pdfFiles.length
+
+          setConversionState((prev) => ({
+            ...prev,
+            progress: {
+              current: i,
+              total: totalFiles,
+              message: `Processing file ${fileIndex} of ${totalFiles}: ${pdfFile.name}...`,
+            },
+          }))
+
+          const pdfPages = await splitPdfIntoPages(
+            pdfFile.file,
+            (current, total, message) => {
+              // Calculate overall progress: completed files + current file progress
+              const completedFiles = i
+              const overallTotal = totalFiles
+              const overallCurrent = completedFiles + (current / total)
+
+              setConversionState((prev) => ({
+                ...prev,
+                progress: {
+                  current: Math.floor(overallCurrent * overallTotal),
+                  total: overallTotal,
+                  message,
+                },
+              }))
+            }
+          )
+          pdfsPerFile.set(pdfFile.name, pdfPages)
+        }
+
+        setConversionState((prev) => ({
+          ...prev,
+          progress: {
+            current: pdfFiles.length,
+            total: pdfFiles.length,
+            message: 'Creating ZIP archive...',
+          },
+        }))
+
+        const zipBlob = await createZipFromSplitPdfs(
+          pdfFiles.map((f) => f.file),
+          pdfsPerFile
+        )
+
+        setConversionState({
+          type: 'pdf-to-pdfs',
+          status: 'success',
+          progress: {
+            current: pdfFiles.length,
+            total: pdfFiles.length,
+            message: `Successfully split ${pdfFiles.length} PDF${pdfFiles.length !== 1 ? 's' : ''} into pages!`,
+          },
+          error: null,
+          downloadBlob: zipBlob,
+          downloadFileName: 'split-pages.zip',
         })
       } else {
         const imageFiles = files.filter((f) => isImage(f.file))
