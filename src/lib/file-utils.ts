@@ -1,7 +1,7 @@
 import { ValidationResult } from '@/types'
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
-const MAX_FILES = 20
+const MAX_FILES = 50
 
 const VALID_PDF_TYPES = ['application/pdf']
 const VALID_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
