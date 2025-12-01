@@ -32,9 +32,9 @@ describe('file-utils', () => {
 
     it('should reject when file count exceeds limit', () => {
       const file = new File(['content'], 'test.pdf', { type: 'application/pdf' })
-      const result = validateFile(file, 20)
+      const result = validateFile(file, 50)
       expect(result.valid).toBe(false)
-      expect(result.error).toContain('Maximum 20 files')
+      expect(result.error).toContain('Maximum 50 files')
     })
   })
 
@@ -49,7 +49,7 @@ describe('file-utils', () => {
     })
 
     it('should reject when total files exceed limit', () => {
-      const files = Array(21)
+      const files = Array(51)
         .fill(0)
         .map((_, i) => new File(['content'], `test${i}.pdf`, { type: 'application/pdf' }))
       const result = validateFiles(files)
@@ -57,14 +57,14 @@ describe('file-utils', () => {
     })
 
     it('should reject when adding files would exceed limit with existing files', () => {
-      const existingFileCount = 15
+      const existingFileCount = 45
       const files = Array(10)
         .fill(0)
         .map((_, i) => new File(['content'], `test${i}.pdf`, { type: 'application/pdf' }))
       const result = validateFiles(files, existingFileCount)
       expect(result.valid).toBe(false)
-      expect(result.error).toContain('Cannot add more than 20 files')
-      expect(result.error).toContain('You currently have 15')
+      expect(result.error).toContain('Cannot add more than 50 files')
+      expect(result.error).toContain('You currently have 45')
       expect(result.error).toContain('trying to add 10 more')
     })
 
@@ -77,8 +77,8 @@ describe('file-utils', () => {
       expect(result.valid).toBe(true)
     })
 
-    it('should handle edge case: exactly 20 files total', () => {
-      const existingFileCount = 18
+    it('should handle edge case: exactly 50 files total', () => {
+      const existingFileCount = 48
       const files = Array(2)
         .fill(0)
         .map((_, i) => new File(['content'], `test${i}.pdf`, { type: 'application/pdf' }))
