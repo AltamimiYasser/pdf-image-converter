@@ -14,7 +14,7 @@ export interface ValidationResult {
 }
 
 export interface ConversionState {
-  type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs' | null
+  type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs' | 'pdfs-to-pdf' | null
   status: 'idle' | 'processing' | 'success' | 'error'
   progress: {
     current: number

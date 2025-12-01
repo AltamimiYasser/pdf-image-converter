@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react'
 interface ConversionControlsProps {
   canConvertPdfToImages: boolean
   canConvertImagesToPdf: boolean
-  onConvert: (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs') => void
+  canCombinePdfs: boolean
+  onConvert: (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs' | 'pdfs-to-pdf') => void
   onDownload: () => void
   isProcessing: boolean
   hasDownloadReady: boolean
@@ -14,6 +15,7 @@ interface ConversionControlsProps {
 export default function ConversionControls({
   canConvertPdfToImages,
   canConvertImagesToPdf,
+  canCombinePdfs,
   onConvert,
   onDownload,
   isProcessing,
@@ -26,7 +28,7 @@ export default function ConversionControls({
     }
   }, [hasDownloadReady])
 
-  const handleConvert = (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs') => {
+  const handleConvert = (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs' | 'pdfs-to-pdf') => {
     onConvert(type)
   }
 
@@ -81,6 +83,20 @@ export default function ConversionControls({
               >
                 Split Pages
               </button>
+              {canCombinePdfs && (
+                <button
+                  onClick={() => handleConvert('pdfs-to-pdf')}
+                  disabled={isProcessing}
+                  aria-label="Combine PDFs into one"
+                  className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                    !isProcessing
+                      ? 'bg-secondary hover:bg-secondary-hover text-white focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Combine PDFs
+                </button>
+              )}
               <button
                 onClick={() => handleConvert('images-to-pdf')}
                 disabled={isProcessing || !canConvertImagesToPdf}
@@ -99,7 +115,7 @@ export default function ConversionControls({
             </>
           ) : canConvertPdfOnly ? (
             <>
-              {/* Only PDFs uploaded - show both conversion options */}
+              {/* Only PDFs uploaded - show PDF conversion options */}
               <button
                 onClick={() => handleConvert('pdf-to-images')}
                 disabled={!canConvert}
@@ -124,6 +140,20 @@ export default function ConversionControls({
               >
                 {isProcessing ? 'Splitting...' : 'Split Pages'}
               </button>
+              {canCombinePdfs && (
+                <button
+                  onClick={() => handleConvert('pdfs-to-pdf')}
+                  disabled={!canConvert}
+                  aria-label={isProcessing ? 'Combining files' : 'Combine PDFs into one'}
+                  className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors text-base ${
+                    canConvert
+                      ? 'bg-secondary hover:bg-secondary-hover text-white focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  {isProcessing ? 'Combining...' : 'Combine PDFs'}
+                </button>
+              )}
               <p className="text-xs sm:text-sm text-neutral-textSecondary text-center mt-1">
                 Detected: PDF files uploaded
               </p>
