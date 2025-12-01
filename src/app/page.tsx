@@ -12,6 +12,7 @@ import { convertPdfToImages } from '@/lib/pdf-converter'
 import { createZipFromPdfImages, createZipFromSplitPdfs } from '@/lib/zip-utils'
 import { convertImagesToPdf } from '@/lib/image-converter'
 import { splitPdfIntoPages } from '@/lib/pdf-splitter'
+import { combinePdfs } from '@/lib/pdf-combiner'
 
 export default function Home() {
   const [files, setFiles] = useState<UploadedFile[]>([])
@@ -34,7 +35,7 @@ export default function Home() {
     setFiles(reorderedFiles)
   }
 
-  const handleConvert = async (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs') => {
+  const handleConvert = async (type: 'pdf-to-images' | 'images-to-pdf' | 'pdf-to-pdfs' | 'pdfs-to-pdf') => {
     try {
       setConversionState({
         type,
@@ -175,6 +176,44 @@ export default function Home() {
           downloadBlob: zipBlob,
           downloadFileName: 'split-pages.zip',
         })
+      } else if (type === 'pdfs-to-pdf') {
+        const pdfFiles = files.filter((f) => isPDF(f.file))
+
+        setConversionState((prev) => ({
+          ...prev,
+          progress: {
+            current: 0,
+            total: pdfFiles.length,
+            message: `Combining ${pdfFiles.length} PDF${pdfFiles.length !== 1 ? 's' : ''}...`,
+          },
+        }))
+
+        const combinedPdf = await combinePdfs(
+          pdfFiles.map((f) => f.file),
+          (current, total, message) => {
+            setConversionState((prev) => ({
+              ...prev,
+              progress: {
+                current,
+                total,
+                message,
+              },
+            }))
+          }
+        )
+
+        setConversionState({
+          type: 'pdfs-to-pdf',
+          status: 'success',
+          progress: {
+            current: pdfFiles.length,
+            total: pdfFiles.length,
+            message: `Successfully combined ${pdfFiles.length} PDF${pdfFiles.length !== 1 ? 's' : ''} into one!`,
+          },
+          error: null,
+          downloadBlob: combinedPdf,
+          downloadFileName: 'combined.pdf',
+        })
       } else {
         const imageFiles = files.filter((f) => isImage(f.file))
 
@@ -274,6 +313,7 @@ export default function Home() {
   const imageFiles = files.filter((f) => isImage(f.file))
   const canConvertPdfToImages = pdfFiles.length > 0
   const canConvertImagesToPdf = imageFiles.length > 0
+  const canCombinePdfs = pdfFiles.length >= 2
   const hasDownloadReady = conversionState.status === 'success' && conversionState.downloadBlob !== undefined
 
   return (
@@ -302,6 +342,7 @@ export default function Home() {
               <ConversionControls
                 canConvertPdfToImages={canConvertPdfToImages}
                 canConvertImagesToPdf={canConvertImagesToPdf}
+                canCombinePdfs={canCombinePdfs}
                 onConvert={handleConvert}
                 onDownload={handleDownload}
                 isProcessing={conversionState.status === 'processing'}
